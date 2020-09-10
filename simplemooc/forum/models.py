@@ -72,6 +72,8 @@ class Reply(models.Model):
 def post_save_reply(instance, **kwargs):
     instance.topic.answers = instance.topic.replies.count()
     instance.topic.save()
+    if instance.correct:
+        instance.topic.replies.exclude(pk=instance.pk).update(correct=False)
 
 
 def post_delete_reply(instance, **kwargs):

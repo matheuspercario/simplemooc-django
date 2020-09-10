@@ -1,8 +1,8 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView, View, ListView, DetailView
 
 from .forms import ReplyForm
-from .models import Topic
+from .models import Topic, Reply
 from django.contrib import messages
 
 # Create your views here.
@@ -70,3 +70,15 @@ class TopicView(DetailView):
             messages.success(request, 'Resposta enviada com sucesso')
             context['form'] = ReplyForm()
         return self.render_to_response(context)
+
+
+class ReplyChooseView(View):
+
+    correct = True
+
+    def get(self, request, pk):
+        reply = get_object_or_404(Reply, pk=pk, author=request.user)
+        reply.correct = self.correct
+        reply.save()
+        messages.success(request, 'Resposta atualizada com sucesso')
+        return redirect(reply.topic.get_absolute_url())

@@ -9,8 +9,8 @@
 			<li>
 				<a href="{% url 'forum:forum_index' %}">Fórum de Discussões</a>
 			</li>
-            <li>/</li>
-            <li>
+			<li>/</li>
+			<li>
 				<a href="{{ object.get_absolute.url }}">{{ object }}</a>
 			</li>
 		</ul>
@@ -40,15 +40,15 @@
 				<li class="pure-menu-heading">Tags</li>
 				<li>
 					{% for tag in tags %}
-                    <a href="{% url 'forum:index_taggit' tag.slug %}" class="tags">
-                        <i class="fas fa-tag"></i>
-                        {{ tag }}
-                    </a>
-                    {% endfor %}
+					<a href="{% url 'forum:index_taggit' tag.slug %}" class="tags">
+						<i class="fas fa-tag"></i>
+						{{ tag }}
+					</a>
+					{% endfor %}
 					<a href="{% url 'forum:forum_index' %}" class="tags">
-                        <i class="fas fa-minus-circle"></i>
-						Limpar 
-                    </a>
+						<i class="fas fa-minus-circle"></i>
+						Limpar
+					</a>
 				</li>
 			</ul>
 		</div>
@@ -56,48 +56,60 @@
 	<div class="pure-u-2-3">
 		<div class="inner">
 			<div class="well">
-                <h2>{{ object }}</h2>
-                {{ object.body|linebreaks}}
-                <h5>
-                    Criado por {{ object.author }}
-                </h5>
-                <p>
+				<h2>{{ object }}</h2>
+				{{ object.body|linebreaks}}
+				<h5>
+					Criado por {{ object.author }}
+				</h5>
+				<p>
 					<i class="fas fa-tags"></i>
 					Tags:
 					{% for tag in object.tags.all %}
-					<a href="{% url 'forum:index_taggit' tag.slug %}" title="">{{ tag }}</a>{% if not forloop.last %},{% endif %}
+					<a href="{% url 'forum:index_taggit' tag.slug %}"
+						title="">{{ tag }}</a>{% if not forloop.last %},{% endif %}
 					{% endfor %}
-					<a class="fright" href="{{ object.get_absolute_url }}" title="">Criado a {{ object.created|timesince }} atrás</a>
+					<a class="fright" href="{{ object.get_absolute_url }}" title="">Criado a
+						{{ object.created|timesince }} atrás</a>
 				</p>
-            </div>
-            <div class="well">
-                <h4 id="comments">Respostas
-                    <a href="#add_comment" class="fright">Responder</a>
-                </h4>
-                {% for reply in object.replies.all %}
-                <hr/>
-                    {% filter linebreaks %}
-                    <strong>{{ reply.author }}</strong> disse à {{ reply.created|timesince }} atrás:
-                    {{ reply.reply }}
-                    {% endfilter %}
-                {% endfor %}
-                <hr/>
-                <form method="POST" class="pure-form pure-form-stacked" id="add_comment">
-                    <fieldset>
-                        {% csrf_token %}
-                        {% for field in form %}
-                        <div class="pure-control-group">
-                            {{ field.label_tag }}
-                            {{ field }}
-                            {{ field.errors }}
-                        </div>
-                        {% endfor %}
-                        <div class="pure-controls">
-                            <button class="pure-button pure-button-primary" type="submit">Enviar</button>
-                        </div>
-                    </fieldset> 
-                </form>
-            </div>
+			</div>
+			<div class="well">
+				<h4 id="comments">Respostas
+					<a href="#add_comment" class="fright">Responder</a>
+				</h4>
+				{% for reply in object.replies.all %}
+				<hr />
+				<p>
+					<strong>{{ reply.author }}</strong> disse à {{ reply.created|timesince }} atrás:
+					<br>
+					{{ reply.reply|linebreaks }}
+					{% if reply.correct %}
+						{% if reply.author == user %}
+						<a href="{% url 'forum:reply_incorrect' reply.pk %}" title="" class="pure-button button-error">Cancelar resposta correta</a>
+						{% endif %}
+						<span class="fright label-success">Resposta indicada como correta</span>
+						<br>
+					{% elif reply.author == user %}
+						<a href="{% url 'forum:reply_correct' reply.pk %}" title="" class="pure-button button-success">Resposta correta</a>
+					{% endif %}
+				</p>
+				{% endfor %}
+				<hr />
+				<form method="POST" class="pure-form pure-form-stacked" id="add_comment">
+					<fieldset>
+						{% csrf_token %}
+						{% for field in form %}
+						<div class="pure-control-group">
+							{{ field.label_tag }}
+							{{ field }}
+							{{ field.errors }}
+						</div>
+						{% endfor %}
+						<div class="pure-controls">
+							<button class="pure-button pure-button-primary" type="submit">Enviar</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
 		</div>
 	</div>
 </div>
