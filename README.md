@@ -6,6 +6,8 @@
 
 ## Descrição
  No curso iremos desenvolver uma aplicação chamada Simple MOOC, que é uma plataforma de ensino a distância, vamos desde a criação do projeto, definição das interfaces e arquitetura do projeto até o deploy da aplicação na nuvem.
+ 
+ **_Acesso à aplicação: [simplemooc-web](https://simplemooc-web.herokuapp.com/)_**
 
 &nbsp;
 
