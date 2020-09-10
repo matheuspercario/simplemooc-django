@@ -1,0 +1,40 @@
+{% extends "accounts/dashboard.html" %}
+
+{% block breadcrumb %}
+	{{ block.super }}
+    <li>/</li>
+    <li><a href="{% url 'courses:announcements' course.slug %}">{{ course }}</a></li>
+{% endblock %}
+
+{% block menu_options%}
+<li class="pure-menu-heading">
+	<strong>
+		{{ course.name }}
+	</strong>
+</li>
+<li>
+	<a href="{% url 'courses:lessons' course.slug %}">
+		<i class="fas fa-video"></i>
+		Aulas e Materiais
+	</a>
+</li>
+<li>
+	<a href="#">
+		<i class="fas fa-info-circle"></i>
+		Informações
+	</a>
+</li>
+<li>
+	<a href="{% url 'courses:announcements' course.slug %}">
+		<i class="fas fa-envelope"></i>
+		Anúncios
+	</a>
+</li>
+<li>
+	<a href="#">
+		<i class="fas fa-comments"></i>
+		Forúm de dúvidas
+	</a>
+</li>
+{{ block.super }} <!-- Carregar todas caracteristicas do mesmo bloco de "accounts/dashboard.html" -->
+{% endblock %}

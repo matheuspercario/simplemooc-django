@@ -1,0 +1,22 @@
+{% extends "courses/course_dashboard.html" %}
+
+{% block dashboard_content %}
+{% for announcement in announcements %}
+<div class="well">
+	<h2><a href="{% url 'courses:show_announcement' course.slug announcement.pk %}">{{ announcement }}</a></h2>
+	{{ announcement.content|linebreaks }}
+	<p>
+		<a href="{% url 'courses:show_announcement' course.slug announcement.pk %}#comments" title="">
+			<i class="fas fa-comments"></i>
+			{% with comments_count=announcement.comments.count %}
+				{{ comments_count }} Comentário{{ comments_count|pluralize }}
+			{% endwith %}
+		</a>
+	</p>
+</div>
+{% empty %}
+<div class="well">
+	<h2>Nenhum anúncio disponível</h2>
+</div>
+{% endfor %}
+{% endblock %}

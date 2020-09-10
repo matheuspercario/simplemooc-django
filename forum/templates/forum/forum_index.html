@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pure-g-r content-ribbon">
+	<div class="pure-u-1">
+		<ul class="breadcrumb">
+			<li><a href="{% url 'core:home' %}">Início</a></li>
+			<li>/</li>
+			<li>
+				<a href="{% url 'forum:forum_index' %}">Fórum de Discussões</a>
+			</li>
+		</ul>
+	</div>
+	<div class="pure-u-1-3">
+		<div class="pure-menu pure-menu-open">
+			<ul>
+				<li class="pure-menu-heading">Tópicos do Fórum</li>
+				<li>
+					<a href="?order=recents">
+						<i class="fas fa-sync-alt"></i>
+						Mais Recentes
+					</a>
+				</li>
+				<li>
+					<a href="?order=views">
+						<i class="fas fa-eye"></i>
+						Mais Visualizados
+					</a>
+				</li>
+				<li>
+					<a href="?order=answers">
+						<i class="fas fa-comments"></i>
+						Mais Comentados
+					</a>
+				</li>
+				<li class="pure-menu-heading">Tags</li>
+				<li>
+					{% for tag in tags %}
+                    <a href="{% url 'forum:index_taggit' tag.slug %}" class="tags">
+                        <i class="fas fa-tag"></i>
+                        {{ tag }}
+                    </a>
+                    {% endfor %}
+					<a href="{% url 'forum:forum_index' %}" class="tags">
+                        <i class="fas fa-minus-circle"></i>
+						Limpar 
+                    </a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="pure-u-2-3">
+		<div class="inner">
+			{% for topic in object_list %}
+			<div class="well">
+				<h3><a href="{{ topic.get_absolute_url }}" title="">{{ topic.title }}</a></h3>
+				<h5>
+					Criado por {{ topic.author }} | {{ topic.answers }} resposta{{ topic.answers|pluralize }} |
+					{{ topic.views }} Visualizaç{{ topic.views|pluralize:"ão,ões" }}
+				</h5>
+				<p>
+					<i class="fas fa-tags"></i>
+					Tags:
+					{% for tag in topic.tags.all %}
+					<a href="{% url 'forum:index_taggit' tag.slug %}" title="">{{ tag }}</a>{% if not forloop.last %},{% endif %}
+					{% endfor %}
+					<a class="fright" href="{{ topic.get_absolute_url }}" title="">Atualizado a {{ topic.modified|timesince }} atrás</a>
+				</p>
+			</div>
+			{% empty %}
+			<div class="well">
+				<h3>Nenhum tópico em aberto</h3>
+			</div>
+			{% endfor %}
+			<ul class="pagination pagination-centered">
+                {% if page_obj.has_previous %}
+                <li>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" title="">Anterior</a>
+                </li>
+				{% else %}
+				<li class="disabled">
+                    <a href="#" title="">Anterior</a>
+                </li>
+                {% endif %}
+                {% for page in paginator.page_range %}
+                <li {% if page == page_obj.number %} class="active"{% endif %}>
+                    <a href="?page={{ page }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" title="">{{ page }}</a>
+                </li>
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li>
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.order %}&order={{ request.GET.order }}{% endif %}" title="">Próxima</a>
+                </li>
+				{% else %}
+				<li class="disabled">
+                    <a href="#" title="">Próxima</a>
+                </li>
+                {% endif %}
+            </ul>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+
+
