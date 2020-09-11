@@ -72,7 +72,7 @@
 						{{ object.created|timesince }} atrás</a>
 				</p>
 			</div>
-			<div class="well">
+			<div class="well" id="div-comments">
 				<h4 id="comments">Respostas
 					<a href="#add_comment" class="fright">Responder</a>
 				</h4>
@@ -81,15 +81,26 @@
 				<p>
 					<strong>{{ reply.author }}</strong> disse à {{ reply.created|timesince }} atrás:
 					<br>
-					{{ reply.reply|linebreaks }}
-					{% if reply.correct %}
-						{% if reply.author == user %}
-						<a href="{% url 'forum:reply_incorrect' reply.pk %}" title="" class="pure-button button-error">Cancelar resposta correta</a>
-						{% endif %}
-						<span class="fright label-success">Resposta indicada como correta</span>
-						<br>
-					{% elif reply.author == user %}
-						<a href="{% url 'forum:reply_correct' reply.pk %}" title="" class="pure-button button-success">Resposta correta</a>
+					{{ reply.reply|linebreaksbr }}
+					<br>
+					{% if object.author == user %}
+					<a href="{% url 'forum:reply_incorrect' reply.pk %}" title=""
+						class="pure-button button-error reply-cancel-correct-lnk{% if not reply.correct %} hidden{% endif %}">Cancelar
+						Resposta Correta</a>
+
+					<a href="{% url 'forum:reply_correct' reply.pk %}" title=""
+						class="pure-button button-success reply-correct-lnk{% if reply.correct %} hidden{% endif %}">Resposta
+						Correta</a>
+
+					<span
+						class="fright label-success reply-correct-msg{% if not reply.correct %} hidden{% endif %}">Resposta
+						indicada pelo autor</span>
+
+					<br class="reply-correct-msg{% if not reply.correct %} hidden{% endif %}" />
+
+					{% elif reply.correct %}
+					<span class="fright label-success">Resposta indicada pelo autor</span>
+					<br />
 					{% endif %}
 				</p>
 				{% endfor %}
@@ -114,3 +125,41 @@
 	</div>
 </div>
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+	$(".reply-cancel-correct-lnk").click(function(e){
+		e.preventDefault(); //Evitar o recarregamento da pagina
+		var $this = $(this);
+		var $p = $this.closest("p")
+		$.get($this.attr("href"), function(data){
+			if(data.success){
+				$this.addClass("hidden");
+				$p.find(".reply-correct-lnk").removeClass("hidden");
+				$p.find(".reply-correct-msg").addClass("hidden");
+			} else {
+				alert(data.message)
+			}
+		}, "json");
+	});
+
+	$(".reply-correct-lnk").click(function(e){
+		e.preventDefault(); //Evitar o recarregamento da pagina
+		var $this = $(this);
+		var $p = $this.closest("p")
+		$.get($this.attr("href"), function(data){
+			if(data.success){
+				$("#div-comments .reply-correct-msg").addClass("hidden");
+				$("#div-comments .reply-cancel-correct-lnk").addClass("hidden");
+				$("#div-comments .reply-correct-lnk").removeClass("hidden");
+
+				$this.addClass("hidden");
+				$p.find(".reply-cancel-correct-lnk").removeClass("hidden");
+				$p.find(".reply-correct-msg").removeClass("hidden");
+			} else {
+				alert(data.message)
+			}
+		}, "json");
+	});
+</script>
+{% endblock %}

@@ -16,7 +16,8 @@ class TopicAdmin(admin.ModelAdmin):
 
 class ReplyAdmin(admin.ModelAdmin):
 
-    list_display = ['topic', 'author', 'created', 'modified']
+    list_display = ['topic', 'correct', 'reply',
+                    'author', 'created', 'modified']
     search_fields = ['topic__title', 'author__email', 'reply']
 
 

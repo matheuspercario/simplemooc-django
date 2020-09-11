@@ -1,9 +1,12 @@
-from django.shortcuts import redirect, render, get_object_or_404
-from django.views.generic import TemplateView, View, ListView, DetailView
+import json
+
+from django.contrib import messages
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import DetailView, ListView, TemplateView, View
 
 from .forms import ReplyForm
-from .models import Topic, Reply
-from django.contrib import messages
+from .models import Reply, Topic
 
 # Create your views here.
 
@@ -77,8 +80,13 @@ class ReplyChooseView(View):
     correct = True
 
     def get(self, request, pk):
-        reply = get_object_or_404(Reply, pk=pk, author=request.user)
+        reply = get_object_or_404(Reply, pk=pk, topic__author=request.user)
         reply.correct = self.correct
         reply.save()
-        messages.success(request, 'Resposta atualizada com sucesso')
-        return redirect(reply.topic.get_absolute_url())
+        message = 'Resposta atualizada com sucesso'
+        if request.is_ajax():
+            data = {'success': True, 'message': message}
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        else:
+            messages.success(request, message)
+            return redirect(reply.topic.get_absolute_url())
